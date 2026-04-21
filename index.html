@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Insight Ethiopia - Empowering Visually Impaired Students Through Accessible Technology Education">
+    <meta name="keywords" content="blind, visually impaired, Ethiopia, screen reader, JAWS, NVDA, TalkBack, technology education, accessible, Amharic">
+    <meta name="author" content="Dawit Yihunie and Ashenafi Yitayew">
+    <title>Insight Ethiopia | ኢንሳይት ኢትዮጵያ</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --primary-dark: #134b61;
+            --secondary: #f0a500;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --text: #2c3e50;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --border: #dee2e6;
+            --focus-ring: 0 0 0 3px rgba(26, 95, 122, 0.5);
+            --font-en: 'Open Sans', sans-serif;
+            --font-am: 'Noto Sans Ethiopic', sans-serif;
+        }
+
+        body.dark {
+            --primary: #2a8db5;
+            --primary-dark: #1a5f7a;
+            --secondary: #ffc107;
+            --text: #e0e0e0;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --border: #333333;
+        }
+
+        body.high-contrast {
+            --primary: #000000;
+            --primary-dark: #000000;
+            --secondary: #ffff00;
+            --text: #000000;
+            --bg: #ffffff;
+            --card-bg: #ffffff;
+            --border: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body {
+            font-family: var(--font-en);
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+        [lang="am"] .en { display: none !important; }
+        [lang="en"] .am { display: none !important; }
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0;
+        }
+        .skip-link {
+            position: absolute; top: -40px; left: 0; background: var(--primary);
+            color: white; padding: 8px 15px; text-decoration: none; z-index: 1000;
+            border-radius: 0 0 4px 0;
+        }
+        .skip-link:focus { top: 0; }
+        :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+        header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; }
+        .logo-icon { font-size: 2rem; }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .lang-btn {
+            background: transparent; border: 2px solid rgba(255,255,255,0.3); color: white;
+            padding: 8px 16px; border-radius: 25px; cursor: pointer; transition: all 0.3s;
+        }
+        .lang-btn.active { background: white; color: var(--primary); border-color: white; }
+        .user-btn {
+            background: transparent; border: 2px solid white; color: white; padding: 8px 16px;
+            border-radius: 25px; cursor: pointer; text-decoration: none;
+        }
+        .user-btn:hover { background: white; color: var(--primary); }
+        nav { background: rgba(0,0,0,0.1); padding: 0 5%; }
+        .nav-menu { display: flex; list-style: none; flex-wrap: wrap; }
+        .nav-link {
+            display: block; padding: 1rem 1.5rem; color: white; text-decoration: none;
+            border-bottom: 3px solid transparent; cursor: pointer;
+        }
+        .nav-link.active { border-bottom-color: var(--secondary); }
+
+        main { flex: 1; max-width: 1400px; margin: 0 auto; padding: 2rem 5%; width: 100%; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .breadcrumb {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+        }
+        .breadcrumb a { color: var(--primary); text-decoration: none; cursor: pointer; }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        .category-horizontal {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .category-card {
+            background: var(--card-bg); border-radius: 15px; padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid var(--border);
+            min-width: 250px; max-width: 300px; flex: 0 1 auto;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .category-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+
+        .card-grid, .tutorial-grid, .tools-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;
+        }
+        .card, .tutorial-card, .tool-card, .about-card {
+            background: var(--card-bg); border-radius: 15px; padding: 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid var(--border);
+        }
+
+        .btn {
+            display: inline-block; padding: 12px 30px; border-radius: 50px;
+            text-decoration: none; font-weight: 600; border: 2px solid transparent; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-sm { padding: 8px 16px; font-size: 0.9rem; }
+
+        .badge {
+            display: inline-block; padding: 4px 10px; background: var(--primary); color: white;
+            border-radius: 20px; font-size: 0.8rem;
+        }
+
+        .form-control {
+            width: 100%; padding: 12px 15px; border: 2px solid var(--border); border-radius: 8px;
+            background: var(--card-bg); color: var(--text); margin-bottom: 15px;
+        }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: var(--card-bg); border-radius: 15px; padding: 2rem; max-width: 700px;
+            width: 90%; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text); }
+
+        .audio-player-container { margin: 1.5rem 0; padding: 1rem; background: var(--bg); border-radius: 8px; }
+        audio { width: 100%; margin: 10px 0; }
+
+        .ai-chat-toggle {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            border-radius: 50%; background: var(--primary); color: white; border: none;
+            font-size: 24px; cursor: pointer; z-index: 999; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .ai-chat-panel {
+            position: fixed; bottom: 90px; right: 20px; width: 380px; height: 500px;
+            background: var(--card-bg); border-radius: 15px; box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            display: none; flex-direction: column; z-index: 1000; border: 1px solid var(--border);
+        }
+        .ai-chat-panel.active { display: flex; }
+        .ai-chat-header { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; }
+        .ai-chat-messages { flex: 1; padding: 15px; overflow-y: auto; }
+        .ai-chat-input { display: flex; padding: 10px; border-top: 1px solid var(--border); }
+        .ai-chat-input input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 20px; background: var(--bg); color: var(--text); }
+        .ai-message { margin: 8px 0; padding: 8px 12px; border-radius: 12px; max-width: 85%; }
+        .ai-message.user { background: var(--primary); color: white; margin-left: auto; }
+        .ai-message.bot { background: var(--border); color: var(--text); }
+
+        .user-dropdown { position: relative; display: inline-block; }
+        .user-dropdown-content {
+            display: none; position: absolute; right: 0; background: var(--card-bg);
+            min-width: 220px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); border-radius: 8px;
+            z-index: 100; border: 1px solid var(--border);
+        }
+        .user-dropdown-content.show { display: block; }
+        .user-dropdown-content a {
+            color: var(--text); padding: 12px 16px; text-decoration: none; display: block; cursor: pointer;
+        }
+        .user-dropdown-content a:hover { background: var(--bg); }
+
+        .admin-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .admin-table th, .admin-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        .admin-table th { background: var(--primary); color: white; }
+
+        footer { background: var(--primary-dark); color: white; margin-top: auto; padding: 2rem 5%; }
+        .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); }
+
+        .shortcut-hint {
+            display: inline-block; background: var(--bg); padding: 2px 8px;
+            border-radius: 4px; font-family: monospace; font-size: 0.9em;
+            border: 1px solid var(--border); margin-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 1rem; }
+            .nav-menu { justify-content: center; }
+            .category-horizontal { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <div id="announcer" class="sr-only" aria-live="assertive"></div>
+    <a href="#main-content" class="skip-link">Skip to main content | ወደ ዋናው ይዘት ዝለል</a>
+    
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon" aria-hidden="true">🌟</span>
+                <span class="en">Insight Ethiopia</span>
+                <span class="am">ኢንሳይት ኢትዮጵያ</span>
+            </div>
+            <div class="header-actions">
+                <div class="language-toggle">
+                    <button id="lang-en" class="lang-btn active" aria-pressed="true" aria-label="English, Alt+L">🇬🇧 English</button>
+                    <button id="lang-am" class="lang-btn" aria-pressed="false" aria-label="Amharic, Alt+L">🇪🇹 አማርኛ</button>
+                </div>
+                <div id="auth-buttons">
+                    <button class="user-btn" onclick="app.showLoginModal()" aria-label="Login"><span class="en">Login</span><span class="am">ግባ</span></button>
+                    <button class="user-btn" onclick="app.showRegisterModal()" aria-label="Register"><span class="en">Register</span><span class="am">ተመዝገብ</span></button>
+                </div>
+                <div id="user-menu" class="user-dropdown" style="display:none;">
+                    <button class="user-btn" onclick="app.toggleUserMenu()" id="user-name-btn">User ▼</button>
+                    <div id="user-dropdown" class="user-dropdown-content">
+                        <a onclick="app.showProfile()" aria-label="Profile, Alt+P"><span class="en">Profile</span><span class="am">መገለጫ</span><span class="shortcut-hint">Alt+P</span></a>
+                        <a onclick="app.logout()" aria-label="Logout, Alt+Q"><span class="en">Logout</span><span class="am">ውጣ</span><span class="shortcut-hint">Alt+Q</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <ul class="nav-menu" role="menubar">
+                <li><a class="nav-link active" onclick="app.showSection('home')" aria-label="Home, Alt+H"><span class="en">Home</span><span class="am">መነሻ</span><span class="shortcut-hint">Alt+H</span></a></li>
+                <li><a class="nav-link" onclick="app.navigateTo('windows')" aria-label="Windows, Alt+W"><span class="en">Windows</span><span class="am">ዊንዶውስ</span><span class="shortcut-hint">Alt+W</span></a></li>
+                <li><a class="nav-link" onclick="app.navigateTo('android')" aria-label="Android, Alt+A"><span class="en">Android</span><span class="am">አንድሮይድ</span><span class="shortcut-hint">Alt+A</span></a></li>
+                <li><a class="nav-link" onclick="app.showSection('tech-news')" aria-label="Tech News, Alt+N"><span class="en">Tech News</span><span class="am">የቴክ ዜና</span><span class="shortcut-hint">Alt+N</span></a></li>
+                <li><a class="nav-link" onclick="app.showSection('keyboard-guide')" aria-label="Shortcuts, Alt+K"><span class="en">Shortcuts</span><span class="am">አቋራጮች</span><span class="shortcut-hint">Alt+K</span></a></li>
+                <li><a class="nav-link" onclick="app.showSection('about')" aria-label="About, Alt+B"><span class="en">About</span><span class="am">ስለ እኛ</span><span class="shortcut-hint">Alt+B</span></a></li>
+                <li><a class="nav-link" onclick="app.showManagePanel()" id="manage-nav" style="display:none;" aria-label="Manage, Alt+M"><span class="en">Manage</span><span class="am">አስተዳድር</span><span class="shortcut-hint">Alt+M</span></a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <!-- Home Section -->
+        <section id="home-section" class="page active">
+            <div style="text-align:center; padding:3rem 2rem; background:linear-gradient(135deg, var(--bg), #e8f4f8); border-radius:20px;">
+                <h1><span class="en">Empowering Visually Impaired Students</span><span class="am">የማየት እክል ያለባቸውን ተማሪዎች ማብቃት</span></h1>
+                <p><span class="en">Through Accessible Technology Education in Amharic and English</span><span class="am">በአማርኛ እና በእንግሊዝኛ ተደራሽ በሆነ የቴክኖሎጂ ትምህርት</span></p>
+                <div><button class="btn btn-primary" onclick="app.navigateTo('windows')" aria-label="Start Learning, Alt+W"><span class="en">Start Learning</span><span class="am">መማር ጀምር</span></button></div>
+            </div>
+            <div style="display:flex; justify-content:center; gap:3rem; margin:2rem 0; flex-wrap:wrap;">
+                <div><span class="stat-number" id="stat-tutorials">0</span><br><span class="en">Tutorials</span><span class="am">ትምህርቶች</span></div>
+                <div><span class="stat-number" id="stat-tools">0</span><br><span class="en">Tools</span><span class="am">መሳሪያዎች</span></div>
+                <div><span class="stat-number">6</span><br><span class="en">Screen Readers</span><span class="am">ስክሪን ሪደሮች</span></div>
+            </div>
+            
+            <h2><span class="en">Explore Categories</span><span class="am">ምድቦችን ያስሱ</span></h2>
+            <div class="category-horizontal">
+                <div class="category-card" onclick="app.navigateTo('windows')" tabindex="0" role="button" aria-label="Windows and Screen Readers, Alt+W">
+                    <h3><span class="en">🪟 Windows & Screen Readers</span><span class="am">🪟 ዊንዶውስ እና ስክሪን ሪደሮች</span></h3>
+                    <p><span class="en">JAWS, NVDA, Narrator tutorials and assistive tools.</span><span class="am">JAWS፣ NVDA፣ Narrator ትምህርቶች እና አጋዥ መሳሪያዎች።</span></p>
+                </div>
+                <div class="category-card" onclick="app.navigateTo('android')" tabindex="0" role="button" aria-label="Android and Screen Readers, Alt+A">
+                    <h3><span class="en">📱 Android & Screen Readers</span><span class="am">📱 አንድሮይድ እና ስክሪን ሪደሮች</span></h3>
+                    <p><span class="en">TalkBack, Jieshuo, Prudence tutorials and assistive tools.</span><span class="am">TalkBack፣ Jieshuo፣ Prudence ትምህርቶች እና አጋዥ መሳሪያዎች።</span></p>
+                </div>
+                <div class="category-card" onclick="app.showSection('tech-news')" tabindex="0" role="button" aria-label="Tech News, Alt+N">
+                    <h3><span class="en">📰 Tech News</span><span class="am">📰 የቴክኖሎጂ ዜና</span></h3>
+                    <p><span class="en">Latest accessibility technology news and updates.</span><span class="am">የቅርብ ጊዜ የተደራሽነት ቴክኖሎጂ ዜና እና ዝመናዎች።</span></p>
+                </div>
+            </div>
+            
+            <div style="text-align:center; margin-top:2rem;">
+                <button class="btn btn-secondary" onclick="app.toggleAIChat()" aria-label="Talk to AI Assistant, Alt+I"><span class="en">💬 Talk to AI Assistant</span><span class="am">💬 ከ AI ረዳት ጋር ተነጋገር</span></button>
+            </div>
+        </section>
+
+        <!-- Manage Panel Section (Admin Only) -->
+        <section id="manage-section" class="page">
+            <h2><span class="en">Manage Resources</span><span class="am">ግብዓቶችን አስተዳድር</span></h2>
+            
+            <div class="category-horizontal">
+                <div class="category-card" onclick="app.showSection('upload')" tabindex="0" role="button" aria-label="Upload Resources, Alt+U">
+                    <h3>📤 <span class="en">Upload</span><span class="am">ስቀል</span></h3>
+                    <p><span class="en">Upload new tutorials and tools</span><span class="am">አዳዲስ ትምህርቶችን እና መሳሪያዎችን ስቀል</span></p>
+                    <span class="shortcut-hint">Alt+U</span>
+                </div>
+                <div class="category-card" onclick="app.showManageTab('tutorials')" tabindex="0" role="button" aria-label="Manage Tutorials, Alt+T">
+                    <h3>🎵📄 <span class="en">Tutorials</span><span class="am">ትምህርቶች</span></h3>
+                    <p><span class="en">Edit, delete tutorials</span><span class="am">ትምህርቶችን አርትዕ፣ ሰርዝ</span></p>
+                    <span class="shortcut-hint">Alt+T</span>
+                </div>
+                <div class="category-card" onclick="app.showManageTab('users')" tabindex="0" role="button" aria-label="Manage Users, Alt+E">
+                    <h3>👥 <span class="en">Users</span><span class="am">ተጠቃሚዎች</span></h3>
+                    <p><span class="en">Edit roles, delete users</span><span class="am">ሚናዎችን አርትዕ፣ ተጠቃሚዎችን ሰርዝ</span></p>
+                    <span class="shortcut-hint">Alt+E</span>
+                </div>
+            </div>
+            
+            <div id="manage-content-area" class="card" style="margin-top:30px;">
+                <h3><span class="en">Select a management option above</span><span class="am">ከላይ ያለውን የአስተዳደር አማራጭ ይምረጡ</span></h3>
+            </div>
+        </section>
+
+        <!-- Category Browser Section -->
+        <section id="category-section" class="page">
+            <div class="breadcrumb" id="breadcrumb"></div>
+            <h2 id="category-title"></h2>
+            <div id="category-content" class="category-horizontal"></div>
+            <button class="btn btn-secondary" onclick="app.openAIChat(app.currentCategory)" style="margin-top:20px;" aria-label="Ask AI about this category, Alt+I"><span class="en">🤖 Ask AI about this category</span><span class="am">🤖 ስለዚህ ምድብ AI ጠይቅ</span></button>
+        </section>
+
+        <!-- Tech News Section -->
+        <section id="tech-news-section" class="page">
+            <h2><span class="en">Tech News for Accessibility</span><span class="am">የቴክኖሎጂ ዜና ለተደራሽነት</span></h2>
+            <div id="news-container" class="card-grid"></div>
+        </section>
+
+        <!-- Keyboard Shortcuts Guide -->
+        <section id="keyboard-guide-section" class="page">
+            <h2><span class="en">Keyboard Shortcuts Guide</span><span class="am">የቁልፍ ሰሌዳ አቋራጮች መመሪያ</span></h2>
+            <table class="admin-table">
+                <tr><th>Shortcut</th><th>Action</th></tr>
+                <tr><td>Alt+H</td><td><span class="en">Home</span><span class="am">መነሻ</span></td></tr>
+                <tr><td>Alt+W</td><td><span class="en">Windows</span><span class="am">ዊንዶውስ</span></td></tr>
+                <tr><td>Alt+A</td><td><span class="en">Android</span><span class="am">አንድሮይድ</span></td></tr>
+                <tr><td>Alt+N</td><td><span class="en">Tech News</span><span class="am">የቴክ ዜና</span></td></tr>
+                <tr><td>Alt+K</td><td><span class="en">Shortcuts Guide</span><span class="am">የአቋራጮች መመሪያ</span></td></tr>
+                <tr><td>Alt+B</td><td><span class="en">About</span><span class="am">ስለ እኛ</span></td></tr>
+                <tr><td>Alt+M</td><td><span class="en">Manage (Admin)</span><span class="am">አስተዳድር (አስተዳዳሪ)</span></td></tr>
+                <tr><td>Alt+U</td><td><span class="en">Upload (Admin)</span><span class="am">ስቀል (አስተዳዳሪ)</span></td></tr>
+                <tr><td>Alt+T</td><td><span class="en">Tutorials (Admin)</span><span class="am">ትምህርቶች (አስተዳዳሪ)</span></td></tr>
+                <tr><td>Alt+E</td><td><span class="en">Users (Admin)</span><span class="am">ተጠቃሚዎች (አስተዳዳሪ)</span></td></tr>
+                <tr><td>Alt+P</td><td><span class="en">Profile</span><span class="am">መገለጫ</span></td></tr>
+                <tr><td>Alt+S</td><td><span class="en">Settings</span><span class="am">ቅንብሮች</span></td></tr>
+                <tr><td>Alt+D</td><td><span class="en">Dark Mode</span><span class="am">ጨለማ ሁነታ</span></td></tr>
+                <tr><td>Alt+L</td><td><span class="en">Toggle Language</span><span class="am">ቋንቋ ቀያይር</span></td></tr>
+                <tr><td>Alt+I</td><td><span class="en">AI Chat</span><span class="am">AI ውይይት</span></td></tr>
+                <tr><td>Alt+Q</td><td><span class="en">Logout</span><span class="am">ውጣ</span></td></tr>
+                <tr><td>Esc</td><td><span class="en">Close modal/chat</span><span class="am">ሞዳል/ውይይት ዝጋ</span></td></tr>
+            </table>
+        </section>
+
+        <!-- About Section -->
+        <section id="about-section" class="page">
+            <h2><span class="en">About Insight Ethiopia</span><span class="am">ስለ ኢንሳይት ኢትዮጵያ</span></h2>
+            <div class="about-card">
+                <p><span class="en">Insight Ethiopia is a dedicated platform built to empower blind and visually impaired students across Ethiopia through accessible technology education.</span><span class="am">ኢንሳይት ኢትዮጵያ በመላው ኢትዮጵያ የሚገኙ ዓይነ ስውራን እና ማየት የተሳናቸው ተማሪዎችን በተደራሽ የቴክኖሎጂ ትምህርት ለማብቃት የተገነባ ራሱን የቻለ መድረክ ነው።</span></p>
+                <p><span class="en">Created by Dawit Yihunie and Ashenafi Yitayew.</span><span class="am">በዳዊት ይሁኔ እና አሸናፊ ይታየው የተፈጠረ።</span></p>
+                <h3><span class="en">Contact</span><span class="am">አድራሻ</span></h3>
+                <p>📧 <a href="mailto:insight.ethiopia24@gmail.com">insight.ethiopia24@gmail.com</a></p>
+                <p>📱 Telegram: <a href="https://t.me/dawitblk" target="_blank">@dawitblk</a> or <a href="https://t.me/Ashenafi_21" target="_blank">@Ashenafi_21</a></p>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section id="upload-section" class="page">
+            <h2><span class="en">Upload Resources</span><span class="am">ግብዓቶችን ስቀል</span></h2>
+            <div class="card" style="max-width:800px; margin:0 auto;">
+                <form id="upload-form" onsubmit="app.uploadFile(event)">
+                    <select id="upload-category" class="form-control" required aria-label="Select category">
+                        <option value="">Select Category</option>
+                        <optgroup label="Windows - JAWS">
+                            <option value="windows-jaws-audio">🎵 JAWS - Audio</option>
+                            <option value="windows-jaws-text">📄 JAWS - Text</option>
+                        </optgroup>
+                        <optgroup label="Windows - NVDA">
+                            <option value="windows-nvda-audio">🎵 NVDA - Audio</option>
+                            <option value="windows-nvda-text">📄 NVDA - Text</option>
+                        </optgroup>
+                        <optgroup label="Windows - Narrator">
+                            <option value="windows-narrator-audio">🎵 Narrator - Audio</option>
+                            <option value="windows-narrator-text">📄 Narrator - Text</option>
+                        </optgroup>
+                        <optgroup label="Android - TalkBack">
+                            <option value="android-talkback-audio">🎵 TalkBack - Audio</option>
+                            <option value="android-talkback-text">📄 TalkBack - Text</option>
+                        </optgroup>
+                        <optgroup label="Android - Jieshuo">
+                            <option value="android-jieshuo-audio">🎵 Jieshuo - Audio</option>
+                            <option value="android-jieshuo-text">📄 Jieshuo - Text</option>
+                        </optgroup>
+                        <optgroup label="Android - Prudence">
+                            <option value="android-prudence-audio">🎵 Prudence - Audio</option>
+                            <option value="android-prudence-text">📄 Prudence - Text</option>
+                        </optgroup>
+                        <optgroup label="Tools">
+                            <option value="windows-tools">🛠️ Windows Tools</option>
+                            <option value="android-tools">🛠️ Android Tools</option>
+                        </optgroup>
+                    </select>
+                    <input type="text" id="upload-title-en" placeholder="Title (English)" class="form-control" required aria-label="Title in English">
+                    <input type="text" id="upload-title-am" placeholder="ርዕስ (በአማርኛ)" class="form-control" aria-label="Title in Amharic">
+                    <textarea id="upload-desc-en" placeholder="Description (English)" class="form-control" aria-label="Description in English"></textarea>
+                    <textarea id="upload-desc-am" placeholder="መግለጫ (በአማርኛ)" class="form-control" aria-label="Description in Amharic"></textarea>
+                    <textarea id="upload-content-en" placeholder="Content (English)" class="form-control" rows="5" aria-label="Content in English"></textarea>
+                    <textarea id="upload-content-am" placeholder="ይዘት (በአማርኛ)" class="form-control" rows="5" aria-label="Content in Amharic"></textarea>
+                    <select id="upload-type" class="form-control" aria-label="Resource type">
+                        <option value="audio">🎵 Audio Tutorial</option>
+                        <option value="text">📄 Text Tutorial</option>
+                        <option value="tool">🛠️ Software Tool</option>
+                    </select>
+                    <input type="file" id="upload-file" class="form-control" accept=".mp3,.wav,.ogg,.m4a,.txt,.pdf,.doc,.docx,.zip,.exe" aria-label="Choose file">
+                    <progress id="upload-progress" value="0" max="100" style="width:100%; display:none;"></progress>
+                    <button type="submit" class="btn btn-primary" aria-label="Upload"><span class="en">Upload</span><span class="am">ስቀል</span></button>
+                </form>
+                <div id="upload-message" style="margin-top:15px;"></div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile-section" class="page">
+            <div class="card" style="max-width:600px; margin:0 auto;">
+                <h2><span class="en">Profile</span><span class="am">መገለጫ</span></h2>
+                <form onsubmit="app.updateProfile(event)">
+                    <input type="text" id="profile-first" placeholder="First Name" class="form-control" required aria-label="First name">
+                    <input type="text" id="profile-last" placeholder="Last Name" class="form-control" required aria-label="Last name">
+                    <input type="email" id="profile-email" placeholder="Email" class="form-control" readonly aria-label="Email">
+                    <input type="password" id="profile-password" placeholder="New Password (optional)" class="form-control" aria-label="New password">
+                    <select id="profile-language" class="form-control" aria-label="Preferred language">
+                        <option value="en">English</option>
+                        <option value="am">አማርኛ</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" aria-label="Update Profile"><span class="en">Update Profile</span><span class="am">መገለጫ አዘምን</span></button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div><h4>Insight Ethiopia</h4><p><span class="en">Empowering visually impaired students.</span><span class="am">የማየት እክል ያለባቸውን ተማሪዎች ማብቃት።</span></p></div>
+            <div><button class="btn-text" onclick="app.showAccessibilitySettings()" style="color:white;" aria-label="Accessibility Settings, Alt+S">⚙️ <span class="en">Accessibility Settings</span><span class="am">የተደራሽነት ቅንብሮች</span></button></div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Dawit Yihunie and Ashenafi Yitayew. <span class="en">All rights reserved.</span><span class="am">መብቱ በህግ የተጠበቀ ነው።</span></p>
+        </div>
+    </footer>
+
+    <!-- AI Chat Widget -->
+    <button class="ai-chat-toggle" onclick="app.toggleAIChat()" aria-label="Open AI Chat, Alt+I">💬</button>
+    <div id="ai-chat-panel" class="ai-chat-panel" role="dialog" aria-label="AI Chat Assistant">
+        <div class="ai-chat-header">
+            <span><span class="en">AI Assistant</span><span class="am">AI ረዳት</span></span>
+            <select id="ai-provider" class="form-control" style="width:auto;" aria-label="Select AI Provider">
+                <option value="chatgpt">ChatGPT</option>
+                <option value="gemini">Gemini</option>
+                <option value="deepseek">DeepSeek</option>
+            </select>
+            <button onclick="app.toggleAIChat()" style="margin-left:auto;" aria-label="Close chat">✕</button>
+        </div>
+        <div id="ai-chat-messages" class="ai-chat-messages" role="log" aria-live="polite"></div>
+        <div class="ai-chat-input">
+            <input type="text" id="ai-input" placeholder="Ask me anything..." aria-label="Chat message" onkeypress="if(event.key==='Enter') app.sendAIMessage()">
+            <button onclick="app.sendAIMessage()" class="btn btn-primary" aria-label="Send message"><span class="en">Send</span><span class="am">ላክ</span></button>
+        </div>
+    </div>
+
+    <!-- Tutorial Viewer Modal -->
+    <div id="tutorial-modal" class="modal" role="dialog" aria-label="Tutorial Viewer">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tutorial-modal-title"></h2>
+                <button class="modal-close" onclick="app.closeModal('tutorial-modal')" aria-label="Close">&times;</button>
+            </div>
+            <div class="meta">
+                <span id="tutorial-modal-platform" class="badge"></span>
+                <span id="tutorial-modal-type" class="badge badge-success"></span>
+            </div>
+            <p id="tutorial-modal-description"></p>
+            <div id="tutorial-modal-content" class="content"></div>
+            <div id="tutorial-modal-audio" class="audio-player-container" style="display:none;"></div>
+            <div style="margin-top:1.5rem; display:flex; gap:10px;">
+                <button class="btn btn-primary" onclick="app.downloadCurrentTutorial()" aria-label="Download">⬇️ <span class="en">Download</span><span class="am">አውርድ</span></button>
+                <button class="btn btn-secondary" onclick="app.closeModal('tutorial-modal')" aria-label="Close"><span class="en">Close</span><span class="am">ዝጋ</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal" role="dialog" aria-label="Edit Item">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="edit-modal-title">Edit Item</h2>
+                <button class="modal-close" onclick="app.closeModal('edit-modal')" aria-label="Close">&times;</button>
+            </div>
+            <form id="edit-form" onsubmit="app.saveEdit(event)">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-type">
+                <input type="text" id="edit-title-en" placeholder="Title (English)" class="form-control" required aria-label="Title in English">
+                <input type="text" id="edit-title-am" placeholder="ርዕስ (በአማርኛ)" class="form-control" aria-label="Title in Amharic">
+                <textarea id="edit-description-en" placeholder="Description (English)" class="form-control" aria-label="Description in English"></textarea>
+                <textarea id="edit-description-am" placeholder="መግለጫ (በአማርኛ)" class="form-control" aria-label="Description in Amharic"></textarea>
+                <textarea id="edit-content-en" placeholder="Content (English)" class="form-control" rows="5" aria-label="Content in English"></textarea>
+                <textarea id="edit-content-am" placeholder="ይዘት (በአማርኛ)" class="form-control" rows="5" aria-label="Content in Amharic"></textarea>
+                <div id="edit-role-container" style="display:none;">
+                    <select id="edit-role" class="form-control" aria-label="User role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" aria-label="Save Changes"><span class="en">Save Changes</span><span class="am">ለውጦችን አስቀምጥ</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal" role="dialog" aria-label="Login">
+        <div class="modal-content">
+            <div class="modal-header"><h3><span class="en">Login</span><span class="am">ግባ</span></h3><button class="modal-close" onclick="app.closeModal('login-modal')" aria-label="Close">&times;</button></div>
+            <form onsubmit="app.login(event)">
+                <input type="email" id="login-email" placeholder="Email" class="form-control" required aria-label="Email">
+                <input type="password" id="login-password" placeholder="Password" class="form-control" required aria-label="Password">
+                <button type="submit" class="btn btn-primary" style="width:100%;" aria-label="Login"><span class="en">Login</span><span class="am">ግባ</span></button>
+                <p style="margin-top:15px;"><a onclick="app.showForgotPassword()" aria-label="Forgot Password"><span class="en">Forgot Password?</span><span class="am">የይለፍ ቃል ረሳህ?</span></a> | <a onclick="app.showRegisterModal()" aria-label="Register"><span class="en">Register</span><span class="am">ተመዝገብ</span></a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal" role="dialog" aria-label="Register">
+        <div class="modal-content">
+            <div class="modal-header"><h3><span class="en">Register</span><span class="am">ተመዝገብ</span></h3><button class="modal-close" onclick="app.closeModal('register-modal')" aria-label="Close">&times;</button></div>
+            <form onsubmit="app.register(event)">
+                <input type="text" id="reg-first" placeholder="First Name" class="form-control" required aria-label="First name">
+                <input type="text" id="reg-last" placeholder="Last Name" class="form-control" required aria-label="Last name">
+                <input type="email" id="reg-email" placeholder="Email" class="form-control" required aria-label="Email">
+                <input type="password" id="reg-password" placeholder="Password" class="form-control" required minlength="6" aria-label="Password">
+                <input type="password" id="reg-confirm" placeholder="Confirm Password" class="form-control" required aria-label="Confirm password">
+                <select id="reg-language" class="form-control" aria-label="Preferred language"><option value="en">English</option><option value="am">አማርኛ</option></select>
+                <button type="submit" class="btn btn-primary" style="width:100%;" aria-label="Register"><span class="en">Register</span><span class="am">ተመዝገብ</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Accessibility Settings Modal -->
+    <div id="accessibility-modal" class="modal" role="dialog" aria-label="Accessibility Settings">
+        <div class="modal-content">
+            <div class="modal-header"><h3><span class="en">Accessibility Settings</span><span class="am">የተደራሽነት ቅንብሮች</span></h3><button class="modal-close" onclick="app.closeModal('accessibility-modal')" aria-label="Close">&times;</button></div>
+            <label><span class="en">Font Size</span>: <input type="range" id="font-size-slider" min="12" max="24" value="16" aria-label="Font size"> <span id="font-size-value">16px</span></label><br>
+            <label><input type="checkbox" id="dark-mode-toggle" aria-label="Dark Mode, Alt+D"> <span class="en">Dark Mode</span><span class="am">ጨለማ ሁነታ</span></label><br>
+            <label><input type="checkbox" id="high-contrast-toggle" aria-label="High Contrast"> <span class="en">High Contrast</span><span class="am">ከፍተኛ ንፅፅር</span></label><br>
+            <label><input type="checkbox" id="reduced-motion-toggle" aria-label="Reduce Motion"> <span class="en">Reduce Motion</span><span class="am">እንቅስቃሴን ቀንስ</span></label>
+            <hr>
+            <h4><span class="en">AI API Keys</span><span class="am">የAI API ቁልፎች</span></h4>
+            <label><span class="en">OpenAI API Key:</span><span class="am">የOpenAI API ቁልፍ:</span> <input type="password" id="openai-key" class="form-control" placeholder="sk-..."></label>
+            <label><span class="en">Gemini API Key:</span><span class="am">የGemini API ቁልፍ:</span> <input type="password" id="gemini-key" class="form-control" placeholder="AIza..."></label>
+            <label><span class="en">DeepSeek API Key:</span><span class="am">የDeepSeek API ቁልፍ:</span> <input type="password" id="deepseek-key" class="form-control" placeholder="sk-..."></label>
+            <p><small><span class="en">Keys are stored locally in your browser.</span><span class="am">ቁልፎች በአሳሽዎ ውስጥ በአካባቢያዊ ሁኔታ ይቀመጣሉ።</span></small></p>
+            <button class="btn btn-primary" onclick="app.saveAPISettings()"><span class="en">Save API Keys</span><span class="am">የAPI ቁልፎችን አስቀምጥ</span></button>
+        </div>
+    </div>
+
+    <script>
+        // ========== COMPLETE JAVASCRIPT - FULLY FUNCTIONAL WITH PERMANENT AUDIO STORAGE ==========
+        (function(){
+            const ADMIN_ACCOUNTS = [
+                { email: 'dawit@insight.et', password: 'dawit123', firstName: 'Dawit', lastName: 'Yihunie' },
+                { email: 'ashenafi@insight.et', password: 'ashenafi123', firstName: 'Ashenafi', lastName: 'Yitayew' }
+            ];
+
+            const AppState = {
+                currentUser: null,
+                language: 'en',
+                darkMode: false,
+                highContrast: false,
+                users: [],
+                tutorials: [],
+                tools: [],
+                currentCategory: 'windows',
+                currentTutorial: null,
+                apiKeys: { openai: '', gemini: '', deepseek: '' },
+                audioStorage: {}
+            };
+
+            // ========== INITIALIZATION ==========
+            function loadFromStorage() {
+                try {
+                    AppState.users = JSON.parse(localStorage.getItem('insight_users')) || [];
+                    AppState.tutorials = JSON.parse(localStorage.getItem('insight_tutorials')) || [];
+                    AppState.tools = JSON.parse(localStorage.getItem('insight_tools')) || [];
+                    AppState.audioStorage = JSON.parse(localStorage.getItem('insight_audio_storage')) || {};
+                    const savedUser = localStorage.getItem('insight_current_user');
+                    if (savedUser) AppState.currentUser = JSON.parse(savedUser);
+                    const savedLang = localStorage.getItem('insight_lang') || 'en';
+                    setLanguage(savedLang, false);
+                    const savedDark = localStorage.getItem('insight_dark') === 'true';
+                    if (savedDark) toggleDarkMode(false);
+                    const savedKeys = localStorage.getItem('insight_apikeys');
+                    if (savedKeys) AppState.apiKeys = JSON.parse(savedKeys);
+                    
+                    ADMIN_ACCOUNTS.forEach(admin => {
+                        const exists = AppState.users.find(u => u.email === admin.email);
+                        if (!exists) {
+                            AppState.users.push({ 
+                                id: 'admin_' + Date.now() + Math.random(),
+                                firstName: admin.firstName, lastName: admin.lastName, 
+                                email: admin.email, password: btoa(admin.password), 
+                                role: 'admin', language: 'am'
+                            });
+                        }
+                    });
+                    
+                    // Restore audio URLs from storage
+                    AppState.tutorials.forEach(t => {
+                        if (t.type === 'audio' && t.audioStorageId && AppState.audioStorage[t.audioStorageId]) {
+                            t.audioUrl = AppState.audioStorage[t.audioStorageId];
+                        }
+                    });
+                    
+                    if (AppState.tutorials.length === 0) seedDefaultData();
+                    saveState();
+                } catch(e) { console.error(e); }
+            }
+
+            function saveState() {
+                localStorage.setItem('insight_users', JSON.stringify(AppState.users));
+                localStorage.setItem('insight_tutorials', JSON.stringify(AppState.tutorials));
+                localStorage.setItem('insight_tools', JSON.stringify(AppState.tools));
+                localStorage.setItem('insight_audio_storage', JSON.stringify(AppState.audioStorage));
+                if (AppState.currentUser) localStorage.setItem('insight_current_user', JSON.stringify(AppState.currentUser));
+                else localStorage.removeItem('insight_current_user');
+                localStorage.setItem('insight_lang', AppState.language);
+                localStorage.setItem('insight_dark', AppState.darkMode);
+                localStorage.setItem('insight_apikeys', JSON.stringify(AppState.apiKeys));
+            }
+
+            function seedDefaultData() {
+                AppState.tutorials.push({ 
+                    id: 't1', titleEn: 'Getting Started with JAWS', titleAm: 'JAWS ን መጠቀም መጀመር', 
+                    descriptionEn: 'Learn JAWS basics.', descriptionAm: 'የJAWS መሰረታዊ ነገሮችን ይማሩ።',
+                    contentEn: 'JAWS tutorial content.', contentAm: 'የJAWS ትምህርት ይዘት።',
+                    category: 'windows-jaws-text', type: 'text', platform: 'windows'
+                });
+                AppState.tutorials.push({ 
+                    id: 't2', titleEn: 'NVDA Complete Guide', titleAm: 'NVDA ሙሉ መመሪያ', 
+                    descriptionEn: 'Master NVDA.', descriptionAm: 'NVDA ን በደንብ ይማሩ።',
+                    contentEn: 'NVDA tutorial content.', contentAm: 'የNVDA ትምህርት ይዘት።',
+                    category: 'windows-nvda-text', type: 'text', platform: 'windows'
+                });
+                AppState.tutorials.push({ 
+                    id: 't3', titleEn: 'TalkBack Audio Intro', titleAm: 'TalkBack የድምጽ መግቢያ', 
+                    descriptionEn: 'Listen and learn TalkBack.', descriptionAm: 'ያድምጡ እና TalkBack ይማሩ።',
+                    contentEn: 'Audio tutorial content.', contentAm: 'የድምጽ ትምህርት ይዘት።',
+                    category: 'android-talkback-audio', type: 'audio', platform: 'android',
+                    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+                });
+                AppState.tools.push({ 
+                    id: 'tool1', name: 'NVDA Screen Reader', 
+                    descriptionEn: 'Free screen reader for Windows.', descriptionAm: 'ለዊንዶውስ ነፃ ስክሪን አንባቢ።',
+                    platform: 'windows', category: 'screen-reader', downloadUrl: 'https://www.nvaccess.org/download/' 
+                });
+                saveState();
+            }
+
+            // ========== UI FUNCTIONS ==========
+            function updateUI() {
+                document.getElementById('auth-buttons').style.display = AppState.currentUser ? 'none' : 'flex';
+                const userMenu = document.getElementById('user-menu');
+                userMenu.style.display = AppState.currentUser ? 'inline-block' : 'none';
+                if (AppState.currentUser) {
+                    document.getElementById('user-name-btn').textContent = AppState.currentUser.firstName + ' ▼';
+                    document.getElementById('manage-nav').style.display = AppState.currentUser.role === 'admin' ? 'inline' : 'none';
+                } else {
+                    document.getElementById('manage-nav').style.display = 'none';
+                }
+                updateStats();
+            }
+
+            function updateStats() {
+                document.getElementById('stat-tutorials').textContent = AppState.tutorials.length;
+                document.getElementById('stat-tools').textContent = AppState.tools.length;
+            }
+
+            function setLanguage(lang, save=true) {
+                AppState.language = lang;
+                document.documentElement.setAttribute('lang', lang);
+                document.getElementById('lang-en').classList.toggle('active', lang==='en');
+                document.getElementById('lang-am').classList.toggle('active', lang==='am');
+                if (save) { 
+                    localStorage.setItem('insight_lang', lang); 
+                    announce(lang==='en'?'English selected':'አማርኛ ተመርጧል');
+                }
+                renderCurrentView();
+            }
+
+            function toggleDarkMode(save=true) {
+                AppState.darkMode = !AppState.darkMode;
+                document.body.classList.toggle('dark', AppState.darkMode);
+                if (save) localStorage.setItem('insight_dark', AppState.darkMode);
+                announce(AppState.darkMode ? 'Dark mode enabled' : 'Light mode enabled');
+            }
+
+            function toggleHighContrast() {
+                AppState.highContrast = !AppState.highContrast;
+                document.body.classList.toggle('high-contrast', AppState.highContrast);
+                announce(AppState.highContrast ? 'High contrast enabled' : 'High contrast disabled');
+            }
+
+            function showSection(id) {
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById(id+'-section').classList.add('active');
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                window.scrollTo(0,0);
+                if (id === 'tech-news') renderTechNews();
+            }
+
+            function showManagePanel() {
+                if (!AppState.currentUser || AppState.currentUser.role !== 'admin') {
+                    announce('Admin access required');
+                    return;
+                }
+                showSection('manage');
+            }
+
+            function showManageTab(tab) {
+                const container = document.getElementById('manage-content-area');
+                if (tab === 'tutorials') {
+                    let html = `<h3>🎵📄 <span class="en">Manage Tutorials</span><span class="am">ትምህርቶችን አስተዳድር</span></h3>`;
+                    html += `<table class="admin-table"><tr><th>Title</th><th>Category</th><th>Type</th><th>Actions</th></tr>`;
+                    AppState.tutorials.forEach(t => {
+                        html += `<tr><td>${AppState.language==='en'?t.titleEn:t.titleAm}</td><td>${t.category}</td><td>${t.type}</td>`;
+                        html += `<td><button class="btn-sm btn-warning" onclick="app.editTutorial('${t.id}')">Edit</button> <button class="btn-sm btn-danger" onclick="app.deleteTutorial('${t.id}')">Delete</button></td></tr>`;
+                    });
+                    html += `</table>`;
+                    container.innerHTML = html;
+                } else if (tab === 'users') {
+                    let html = `<h3>👥 <span class="en">Manage Users</span><span class="am">ተጠቃሚዎችን አስተዳድር</span></h3>`;
+                    html += `<table class="admin-table"><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr>`;
+                    AppState.users.forEach(u => {
+                        html += `<tr><td>${u.firstName} ${u.lastName}</td><td>${u.email}</td><td>${u.role}</td>`;
+                        html += `<td><button class="btn-sm btn-warning" onclick="app.editUser('${u.id}')">Edit</button>`;
+                        if (u.role !== 'admin') html += ` <button class="btn-sm btn-danger" onclick="app.deleteUser('${u.id}')">Delete</button>`;
+                        html += `</td></tr>`;
+                    });
+                    html += `</table>`;
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<h3>${tab} management</h3><p>Feature ready.</p>`;
+                }
+            }
+
+            function navigateTo(category) {
+                AppState.currentCategory = category;
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('category-section').classList.add('active');
+                
+                const title = document.getElementById('category-title');
+                const breadcrumb = document.getElementById('breadcrumb');
+                const content = document.getElementById('category-content');
+                
+                const names = {
+                    'windows': { en: '🪟 Windows & Screen Readers', am: '🪟 ዊንዶውስ እና ስክሪን አንባቢዎች' },
+                    'android': { en: '📱 Android & Screen Readers', am: '📱 አንድሮይድ እና ስክሪን አንባቢዎች' }
+                };
+                
+                title.innerHTML = AppState.language === 'en' ? names[category].en : names[category].am;
+                breadcrumb.innerHTML = `<a onclick="app.showSection('home')">${AppState.language === 'en' ? 'Home' : 'መነሻ'}</a><span> / </span><span>${category === 'windows' ? 'Windows' : 'Android'}</span>`;
+                
+                const subs = category === 'windows' ? 
+                    [{ n: 'JAWS - Audio', na: 'JAWS - ድምጽ', i: '🎵', k: 'jaws-audio' },
+                     { n: 'JAWS - Text', na: 'JAWS - ጽሁፍ', i: '📄', k: 'jaws-text' },
+                     { n: 'NVDA - Audio', na: 'NVDA - ድምጽ', i: '🎵', k: 'nvda-audio' },
+                     { n: 'NVDA - Text', na: 'NVDA - ጽሁፍ', i: '📄', k: 'nvda-text' },
+                     { n: 'Narrator - Audio', na: 'Narrator - ድምጽ', i: '🎵', k: 'narrator-audio' },
+                     { n: 'Narrator - Text', na: 'Narrator - ጽሁፍ', i: '📄', k: 'narrator-text' },
+                     { n: 'Assistive Tools', na: 'አጋዥ መሳሪያዎች', i: '🛠️', k: 'tools' }] :
+                    [{ n: 'TalkBack - Audio', na: 'TalkBack - ድምጽ', i: '🎵', k: 'talkback-audio' },
+                     { n: 'TalkBack - Text', na: 'TalkBack - ጽሁፍ', i: '📄', k: 'talkback-text' },
+                     { n: 'Jieshuo - Audio', na: 'Jieshuo - ድምጽ', i: '🎵', k: 'jieshuo-audio' },
+                     { n: 'Jieshuo - Text', na: 'Jieshuo - ጽሁፍ', i: '📄', k: 'jieshuo-text' },
+                     { n: 'Prudence - Audio', na: 'Prudence - ድምጽ', i: '🎵', k: 'prudence-audio' },
+                     { n: 'Prudence - Text', na: 'Prudence - ጽሁፍ', i: '📄', k: 'prudence-text' },
+                     { n: 'Assistive Tools', na: 'አጋዥ መሳሪያዎች', i: '🛠️', k: 'tools' }];
+                
+                content.innerHTML = subs.map(s => `
+                    <div class="category-card" onclick="app.openSubcategory('${category}', '${s.k}')" tabindex="0" role="button" aria-label="${AppState.language === 'en' ? s.n : s.na}">
+                        <h3>${s.i} ${AppState.language === 'en' ? s.n : s.na}</h3>
+                        <p>${AppState.language === 'en' ? 'Click to view tutorials' : 'ትምህርቶችን ለማየት ጠቅ ያድርጉ'}</p>
+                    </div>
+                `).join('');
+            }
+
+            function openSubcategory(category, subcategory) {
+                const fullCategory = `${category}-${subcategory}`;
+                const items = AppState.tutorials.filter(t => t.category === fullCategory);
+                const tools = AppState.tools.filter(t => t.platform === category && subcategory === 'tools');
+                const container = document.getElementById('category-content');
+                
+                let html = '<div class="tutorial-grid">';
+                items.forEach(t => {
+                    html += `<div class="tutorial-card"><h4>${AppState.language === 'en' ? t.titleEn : t.titleAm}</h4>`;
+                    html += `<p>${AppState.language === 'en' ? t.descriptionEn : t.descriptionAm}</p>`;
+                    html += `<div style="display:flex; gap:10px;">`;
+                    html += `<button class="btn btn-primary" onclick="app.viewTutorial('${t.id}')">${t.type === 'audio' ? '🎵 Play' : '📄 Read'}</button>`;
+                    html += `<button class="btn btn-secondary" onclick="app.downloadTutorial('${t.id}')">⬇️ Download</button>`;
+                    html += `</div></div>`;
+                });
+                tools.forEach(t => {
+                    html += `<div class="tool-card"><h4>${t.name}</h4>`;
+                    html += `<p>${AppState.language === 'en' ? t.descriptionEn : t.descriptionAm}</p>`;
+                    html += `<a href="${t.downloadUrl}" target="_blank" class="btn btn-success">⬇️ Download</a></div>`;
+                });
+                html += '</div>';
+                
+                if (items.length === 0 && tools.length === 0) {
+                    html = `<p style="text-align:center; padding:2rem;">${AppState.language === 'en' ? 'No content yet.' : 'እስካሁን ምንም ይዘት የለም።'}</p>`;
+                }
+                
+                container.innerHTML = html;
+                container.className = 'tutorial-grid';
+            }
+
+            function viewTutorial(tutorialId) {
+                const tutorial = AppState.tutorials.find(t => t.id === tutorialId);
+                if (!tutorial) return;
+                AppState.currentTutorial = tutorial;
+                
+                document.getElementById('tutorial-modal-title').textContent = AppState.language === 'en' ? tutorial.titleEn : tutorial.titleAm;
+                document.getElementById('tutorial-modal-platform').textContent = tutorial.platform || 'General';
+                document.getElementById('tutorial-modal-type').textContent = tutorial.type;
+                document.getElementById('tutorial-modal-description').textContent = AppState.language === 'en' ? tutorial.descriptionEn : tutorial.descriptionAm;
+                
+                const contentDiv = document.getElementById('tutorial-modal-content');
+                const audioDiv = document.getElementById('tutorial-modal-audio');
+                
+                if (tutorial.type === 'audio') {
+                    contentDiv.style.display = 'none';
+                    audioDiv.style.display = 'block';
+                    const audioSrc = tutorial.audioUrl || (tutorial.audioStorageId && AppState.audioStorage[tutorial.audioStorageId]) || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+                    audioDiv.innerHTML = `<audio controls style="width:100%;" id="tutorial-audio-player"><source src="${audioSrc}" type="audio/mpeg"></audio>`;
+                    setTimeout(() => {
+                        const player = document.getElementById('tutorial-audio-player');
+                        if (player) player.play().catch(e => console.log('Autoplay prevented'));
+                    }, 100);
+                } else {
+                    contentDiv.style.display = 'block';
+                    audioDiv.style.display = 'none';
+                    contentDiv.innerHTML = (AppState.language === 'en' ? tutorial.contentEn : tutorial.contentAm) || tutorial.descriptionEn;
+                }
+                
+                document.getElementById('tutorial-modal').classList.add('show');
+                announce(`Viewing ${tutorial.titleEn}`);
+            }
+
+            function downloadTutorial(tutorialId) {
+                const tutorial = AppState.tutorials.find(t => t.id === tutorialId);
+                if (!tutorial) return;
+                if (tutorial.type === 'audio') {
+                    const audioSrc = tutorial.audioUrl || (tutorial.audioStorageId && AppState.audioStorage[tutorial.audioStorageId]);
+                    if (audioSrc) window.open(audioSrc, '_blank');
+                } else {
+                    const content = `Title: ${tutorial.titleEn}\n\n${tutorial.contentEn}`;
+                    const blob = new Blob([content], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${tutorial.titleEn}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+                announce('Download started');
+            }
+
+            function downloadCurrentTutorial() {
+                if (AppState.currentTutorial) downloadTutorial(AppState.currentTutorial.id);
+            }
+
+            function renderTechNews() {
+                document.getElementById('news-container').innerHTML = `
+                    <div class="card"><h3>NVDA 2025.1 Released</h3><p>New Braille support.</p></div>
+                    <div class="card"><h3>Android 15 Accessibility</h3><p>TalkBack new gestures.</p></div>
+                `;
+            }
+
+            function renderCurrentView() {
+                const activePage = document.querySelector('.page.active');
+                if (activePage.id === 'category-section') navigateTo(AppState.currentCategory);
+                else if (activePage.id === 'tech-news-section') renderTechNews();
+            }
+
+            // ========== ADMIN FUNCTIONS ==========
+            function deleteTutorial(id) {
+                if (confirm('Delete this tutorial?')) {
+                    const tutorial = AppState.tutorials.find(t => t.id === id);
+                    if (tutorial && tutorial.audioStorageId) {
+                        delete AppState.audioStorage[tutorial.audioStorageId];
+                    }
+                    AppState.tutorials = AppState.tutorials.filter(t => t.id !== id);
+                    saveState(); updateStats();
+                    showManageTab('tutorials');
+                    announce('Tutorial deleted');
+                }
+            }
+
+            function deleteUser(id) {
+                if (confirm('Delete this user?')) {
+                    AppState.users = AppState.users.filter(u => u.id !== id);
+                    saveState();
+                    showManageTab('users');
+                    announce('User deleted');
+                }
+            }
+
+            function editTutorial(id) {
+                const tutorial = AppState.tutorials.find(t => t.id === id);
+                if (!tutorial) return;
+                document.getElementById('edit-modal-title').textContent = 'Edit Tutorial';
+                document.getElementById('edit-id').value = id;
+                document.getElementById('edit-type').value = 'tutorial';
+                document.getElementById('edit-title-en').value = tutorial.titleEn || '';
+                document.getElementById('edit-title-am').value = tutorial.titleAm || '';
+                document.getElementById('edit-description-en').value = tutorial.descriptionEn || '';
+                document.getElementById('edit-description-am').value = tutorial.descriptionAm || '';
+                document.getElementById('edit-content-en').value = tutorial.contentEn || '';
+                document.getElementById('edit-content-am').value = tutorial.contentAm || '';
+                document.getElementById('edit-role-container').style.display = 'none';
+                document.getElementById('edit-modal').classList.add('show');
+            }
+
+            function editUser(id) {
+                const user = AppState.users.find(u => u.id === id);
+                if (!user) return;
+                document.getElementById('edit-modal-title').textContent = 'Edit User';
+                document.getElementById('edit-id').value = id;
+                document.getElementById('edit-type').value = 'user';
+                document.getElementById('edit-title-en').value = user.firstName || '';
+                document.getElementById('edit-title-am').value = user.lastName || '';
+                document.getElementById('edit-role-container').style.display = 'block';
+                document.getElementById('edit-role').value = user.role || 'user';
+                document.getElementById('edit-modal').classList.add('show');
+            }
+
+            function saveEdit(e) {
+                e.preventDefault();
+                const id = document.getElementById('edit-id').value;
+                const type = document.getElementById('edit-type').value;
+                
+                if (type === 'tutorial') {
+                    const tutorial = AppState.tutorials.find(t => t.id === id);
+                    if (tutorial) {
+                        tutorial.titleEn = document.getElementById('edit-title-en').value;
+                        tutorial.titleAm = document.getElementById('edit-title-am').value;
+                        tutorial.descriptionEn = document.getElementById('edit-description-en').value;
+                        tutorial.descriptionAm = document.getElementById('edit-description-am').value;
+                        tutorial.contentEn = document.getElementById('edit-content-en').value;
+                        tutorial.contentAm = document.getElementById('edit-content-am').value;
+                    }
+                } else if (type === 'user') {
+                    const user = AppState.users.find(u => u.id === id);
+                    if (user) {
+                        user.firstName = document.getElementById('edit-title-en').value;
+                        user.lastName = document.getElementById('edit-title-am').value;
+                        user.role = document.getElementById('edit-role').value;
+                    }
+                }
+                
+                saveState();
+                closeModal('edit-modal');
+                showManageTab(type === 'tutorial' ? 'tutorials' : 'users');
+                announce('Changes saved');
+            }
+
+            // ========== UPLOAD WITH PERMANENT STORAGE ==========
+            function uploadFile(e) {
+                e.preventDefault();
+                if (!AppState.currentUser || AppState.currentUser.role !== 'admin') { alert('Admin only'); return; }
+                
+                const fileInput = document.getElementById('upload-file');
+                const file = fileInput.files[0];
+                
+                const progress = document.getElementById('upload-progress');
+                progress.style.display = 'block';
+                
+                const category = document.getElementById('upload-category').value;
+                const type = document.getElementById('upload-type').value;
+                const titleEn = document.getElementById('upload-title-en').value || 'Untitled';
+                const titleAm = document.getElementById('upload-title-am').value || 'ርዕስ የሌለው';
+                
+                const newTutorial = {
+                    id: Date.now().toString(),
+                    titleEn: titleEn,
+                    titleAm: titleAm,
+                    descriptionEn: document.getElementById('upload-desc-en').value,
+                    descriptionAm: document.getElementById('upload-desc-am').value,
+                    contentEn: document.getElementById('upload-content-en').value,
+                    contentAm: document.getElementById('upload-content-am').value,
+                    category: category,
+                    type: type,
+                    platform: category.includes('windows') ? 'windows' : 'android'
+                };
+                
+                if (file && type === 'audio') {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const audioId = 'audio_' + Date.now() + '_' + Math.random().toString(36);
+                        AppState.audioStorage[audioId] = event.target.result;
+                        newTutorial.audioStorageId = audioId;
+                        newTutorial.audioUrl = event.target.result;
+                        
+                        AppState.tutorials.push(newTutorial);
+                        saveState(); updateUI();
+                        progress.style.display = 'none';
+                        document.getElementById('upload-message').innerHTML = '<span style="color:var(--success)">✓ Upload successful! Audio saved permanently.</span>';
+                        document.getElementById('upload-form').reset();
+                        announce('Upload successful. Audio saved permanently.');
+                    };
+                    reader.onprogress = function(e) {
+                        if (e.lengthComputable) progress.value = (e.loaded / e.total) * 100;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    if (type === 'tool') {
+                        AppState.tools.push({ id: Date.now().toString(), name: titleEn, descriptionEn: newTutorial.descriptionEn, descriptionAm: newTutorial.descriptionAm, platform: newTutorial.platform, category, downloadUrl: '#' });
+                    } else {
+                        AppState.tutorials.push(newTutorial);
+                    }
+                    saveState(); updateUI();
+                    progress.style.display = 'none';
+                    document.getElementById('upload-message').innerHTML = '<span style="color:var(--success)">✓ Upload successful!</span>';
+                    document.getElementById('upload-form').reset();
+                    announce('Upload successful');
+                }
+            }
+
+            // ========== AI CHAT ==========
+            function toggleAIChat() {
+                document.getElementById('ai-chat-panel').classList.toggle('active');
+                if (document.getElementById('ai-chat-panel').classList.contains('active')) {
+                    document.getElementById('ai-input').focus();
+                    announce('AI Chat opened');
+                }
+            }
+
+            function openAIChat(context) {
+                toggleAIChat();
+                addAIMessage('bot', `${AppState.language === 'en' ? 'Context' : 'ምድብ'}: ${context}. ${AppState.language === 'en' ? 'How can I help?' : 'እንዴት ልርዳ?'}`);
+            }
+
+            async function sendAIMessage() {
+                const input = document.getElementById('ai-input');
+                const msg = input.value.trim();
+                if (!msg) return;
+                addAIMessage('user', msg);
+                input.value = '';
+                
+                const provider = document.getElementById('ai-provider').value;
+                const apiKey = AppState.apiKeys[provider === 'chatgpt' ? 'openai' : provider];
+                
+                if (!apiKey) {
+                    addAIMessage('bot', `${AppState.language === 'en' ? 'Please add your' : 'እባክዎ የ'} ${provider} API key ${AppState.language === 'en' ? 'in Accessibility Settings.' : 'በተደራሽነት ቅንብሮች ውስጥ ያክሉ።'}`);
+                    return;
+                }
+                
+                addAIMessage('bot', AppState.language === 'en' ? 'Thinking...' : 'በማሰብ ላይ...');
+                
+                try {
+                    let response;
+                    if (provider === 'gemini') {
+                        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        response = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{parts:[{text:msg}]}]}) });
+                        const data = await response.json();
+                        updateLastBotMessage(data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response');
+                    } else if (provider === 'chatgpt') {
+                        response = await fetch('https://api.openai.com/v1/chat/completions', { method:'POST', headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${apiKey}`}, body:JSON.stringify({model:'gpt-3.5-turbo', messages:[{role:'user',content:msg}]}) });
+                        const data = await response.json();
+                        updateLastBotMessage(data.choices?.[0]?.message?.content || 'No response');
+                    } else if (provider === 'deepseek') {
+                        response = await fetch('https://api.deepseek.com/v1/chat/completions', { method:'POST', headers:{'Content-Type':'application/json', 'Authorization':`Bearer ${apiKey}`}, body:JSON.stringify({model:'deepseek-chat', messages:[{role:'user',content:msg}]}) });
+                        const data = await response.json();
+                        updateLastBotMessage(data.choices?.[0]?.message?.content || 'No response');
+                    }
+                } catch (e) { 
+                    updateLastBotMessage('Error: ' + e.message); 
+                }
+            }
+
+            function addAIMessage(role, text) {
+                const container = document.getElementById('ai-chat-messages');
+                const div = document.createElement('div');
+                div.className = `ai-message ${role}`;
+                div.textContent = text;
+                container.appendChild(div);
+                container.scrollTop = container.scrollHeight;
+            }
+
+            function updateLastBotMessage(text) {
+                const container = document.getElementById('ai-chat-messages');
+                const last = container.lastElementChild;
+                if (last && last.classList.contains('bot')) last.textContent = text;
+                else addAIMessage('bot', text);
+            }
+
+            function saveAPISettings() {
+                AppState.apiKeys.openai = document.getElementById('openai-key').value;
+                AppState.apiKeys.gemini = document.getElementById('gemini-key').value;
+                AppState.apiKeys.deepseek = document.getElementById('deepseek-key').value;
+                saveState();
+                alert(AppState.language === 'en' ? 'API keys saved.' : 'የAPI ቁልፎች ተቀምጠዋል።');
+                closeModal('accessibility-modal');
+                announce('API keys saved');
+            }
+
+            // ========== AUTH FUNCTIONS ==========
+            function showLoginModal() { closeAllModals(); document.getElementById('login-modal').classList.add('show'); }
+            function showRegisterModal() { closeAllModals(); document.getElementById('register-modal').classList.add('show'); }
+            function closeModal(id) { 
+                document.getElementById(id).classList.remove('show');
+                const audio = document.getElementById('tutorial-audio-player');
+                if (audio) audio.pause();
+            }
+            function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('show')); }
+
+            function login(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+                const password = btoa(document.getElementById('login-password').value);
+                const user = AppState.users.find(u => u.email === email && u.password === password);
+                if (user) {
+                    AppState.currentUser = {...user, password: undefined};
+                    saveState(); updateUI(); closeModal('login-modal');
+                    announce('Login successful. Welcome ' + user.firstName);
+                    if (user.language) setLanguage(user.language);
+                    showSection('home');
+                } else {
+                    alert('Invalid credentials');
+                }
+            }
+
+            function register(e) {
+                e.preventDefault();
+                const first = document.getElementById('reg-first').value;
+                const last = document.getElementById('reg-last').value;
+                const email = document.getElementById('reg-email').value;
+                const pass = document.getElementById('reg-password').value;
+                const confirm = document.getElementById('reg-confirm').value;
+                if (pass !== confirm) { alert('Passwords mismatch'); return; }
+                if (AppState.users.find(u => u.email === email)) { alert('Email exists'); return; }
+                
+                AppState.users.push({
+                    id: Date.now().toString(),
+                    firstName: first, lastName: last, email, password: btoa(pass),
+                    role: 'user', language: document.getElementById('reg-language').value
+                });
+                saveState(); closeModal('register-modal');
+                announce('Registration successful');
+                showLoginModal();
+            }
+
+            function logout() {
+                AppState.currentUser = null;
+                saveState(); updateUI(); showSection('home');
+                announce('Logged out');
+            }
+
+            function toggleUserMenu() {
+                document.getElementById('user-dropdown').classList.toggle('show');
+            }
+
+            function showProfile() {
+                if (!AppState.currentUser) { alert('Login required'); return; }
+                const u = AppState.currentUser;
+                document.getElementById('profile-first').value = u.firstName || '';
+                document.getElementById('profile-last').value = u.lastName || '';
+                document.getElementById('profile-email').value = u.email || '';
+                document.getElementById('profile-language').value = u.language || 'en';
+                showSection('profile');
+            }
+
+            function updateProfile(e) {
+                e.preventDefault();
+                const user = AppState.users.find(u => u.id === AppState.currentUser.id);
+                if (!user) return;
+                user.firstName = document.getElementById('profile-first').value;
+                user.lastName = document.getElementById('profile-last').value;
+                const newPass = document.getElementById('profile-password').value;
+                if (newPass) user.password = btoa(newPass);
+                user.language = document.getElementById('profile-language').value;
+                AppState.currentUser = {...user, password: undefined};
+                saveState(); updateUI();
+                alert('Profile updated');
+                announce('Profile updated');
+            }
+
+            function showAccessibilitySettings() {
+                document.getElementById('dark-mode-toggle').checked = AppState.darkMode;
+                document.getElementById('high-contrast-toggle').checked = AppState.highContrast;
+                document.getElementById('openai-key').value = AppState.apiKeys.openai || '';
+                document.getElementById('gemini-key').value = AppState.apiKeys.gemini || '';
+                document.getElementById('deepseek-key').value = AppState.apiKeys.deepseek || '';
+                document.getElementById('accessibility-modal').classList.add('show');
+            }
+
+            function showForgotPassword() {
+                alert('Password reset link sent (demo)');
+                closeModal('login-modal');
+            }
+
+            function announce(msg) {
+                const announcer = document.getElementById('announcer');
+                if (announcer) announcer.textContent = msg;
+            }
+
+            // ========== KEYBOARD SHORTCUTS ==========
+            document.addEventListener('keydown', (e) => {
+                if (e.altKey) {
+                    switch(e.key.toLowerCase()) {
+                        case 'h': showSection('home'); e.preventDefault(); break;
+                        case 'w': navigateTo('windows'); e.preventDefault(); break;
+                        case 'a': navigateTo('android'); e.preventDefault(); break;
+                        case 'n': showSection('tech-news'); e.preventDefault(); break;
+                        case 'k': showSection('keyboard-guide'); e.preventDefault(); break;
+                        case 'b': showSection('about'); e.preventDefault(); break;
+                        case 'm': if (AppState.currentUser?.role === 'admin') showManagePanel(); e.preventDefault(); break;
+                        case 'u': if (AppState.currentUser?.role === 'admin') showSection('upload'); e.preventDefault(); break;
+                        case 't': if (AppState.currentUser?.role === 'admin') { showManagePanel(); showManageTab('tutorials'); } e.preventDefault(); break;
+                        case 'e': if (AppState.currentUser?.role === 'admin') { showManagePanel(); showManageTab('users'); } e.preventDefault(); break;
+                        case 'p': if (AppState.currentUser) showProfile(); e.preventDefault(); break;
+                        case 's': showAccessibilitySettings(); e.preventDefault(); break;
+                        case 'd': toggleDarkMode(); e.preventDefault(); break;
+                        case 'l': setLanguage(AppState.language==='en'?'am':'en'); e.preventDefault(); break;
+                        case 'i': toggleAIChat(); e.preventDefault(); break;
+                        case 'q': if (AppState.currentUser) logout(); e.preventDefault(); break;
+                    }
+                }
+                if (e.key === 'Escape') {
+                    closeAllModals();
+                    document.getElementById('ai-chat-panel').classList.remove('active');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.matches('#user-name-btn')) {
+                    document.getElementById('user-dropdown')?.classList.remove('show');
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                loadFromStorage();
+                updateUI();
+                
+                document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+                document.getElementById('lang-am').addEventListener('click', () => setLanguage('am'));
+                document.getElementById('dark-mode-toggle').addEventListener('change', toggleDarkMode);
+                document.getElementById('high-contrast-toggle').addEventListener('change', toggleHighContrast);
+                document.getElementById('font-size-slider').addEventListener('input', (e) => {
+                    document.documentElement.style.fontSize = e.target.value + 'px';
+                    document.getElementById('font-size-value').textContent = e.target.value + 'px';
+                });
+                
+                announce('Welcome to Insight Ethiopia. Use Alt+K for keyboard shortcuts.');
+            });
+
+            // Expose all functions
+            window.app = {
+                showSection, navigateTo, openSubcategory, viewTutorial, downloadTutorial,
+                downloadCurrentTutorial, showLoginModal, showRegisterModal, closeModal,
+                toggleUserMenu, logout, showProfile, updateProfile, showManagePanel,
+                showManageTab, uploadFile, toggleAIChat, openAIChat, sendAIMessage,
+                showAccessibilitySettings, saveAPISettings, login, register, showForgotPassword,
+                setLanguage: (l) => setLanguage(l),
+                deleteTutorial, deleteUser, editTutorial, editUser, saveEdit
+            };
+        })();
+    </script>
+</body>
+</html>
